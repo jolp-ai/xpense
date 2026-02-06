@@ -1,0 +1,8 @@
+{
+  "name": "xPense",
+  "description": "Effortlessly track expenses using voice and camera powered by Gemini.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

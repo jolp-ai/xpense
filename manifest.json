@@ -1,0 +1,21 @@
+{
+  "name": "xPense",
+  "short_name": "xPense",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M384 96L128 416' stroke='%2310b981' stroke-width='64' stroke-linecap='round'/%3E%3Cpath d='M384 416L128 96' stroke='%2334d399' stroke-width='64' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M384 96L128 416' stroke='%2310b981' stroke-width='64' stroke-linecap='round'/%3E%3Cpath d='M384 416L128 96' stroke='%2334d399' stroke-width='64' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
