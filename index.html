@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#10b981" />
-    <title>xPense</title>
+    <title>Xpense</title>
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M384 96L128 416' stroke='%2310b981' stroke-width='64' stroke-linecap='round'/%3E%3Cpath d='M384 416L128 96' stroke='%2334d399' stroke-width='64' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background-color: white;'%3E%3Crect width='512' height='512' fill='white'/%3E%3Cpath d='M384 96L128 416' stroke='%2310b981' stroke-width='64' stroke-linecap='round'/%3E%3Cpath d='M384 416L128 96' stroke='%2334d399' stroke-width='64' stroke-linecap='round'/%3E%3C/svg%3E" />
@@ -50,6 +50,21 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+      
+      /* Global focus removal for app-like feel */
+      *:focus {
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Specific Recharts overrides */
+      .recharts-wrapper {
+        outline: none !important;
+        border: none !important;
+      }
+      .recharts-surface {
+        outline: none !important;
+      }
     </style>
   <script type="importmap">
 {
@@ -69,6 +84,7 @@
 </head>
   <body class="bg-gray-50 text-gray-900 antialiased selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-200 fixed inset-0 overflow-hidden">
     <div id="root" class="h-full w-full overflow-hidden"></div>
+    <script type="module" src="./index.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

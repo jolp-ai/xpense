@@ -40,7 +40,7 @@ export const InstallPWA: React.FC = () => {
             <Logo className="w-5 h-5" />
           </div>
           <div className="text-sm">
-            <p className="font-bold">Install xPense</p>
+            <p className="font-bold">Install Xpense</p>
             <p className="opacity-80 text-xs">Add to your home screen</p>
           </div>
         </div>

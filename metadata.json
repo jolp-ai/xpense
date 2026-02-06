@@ -1,5 +1,5 @@
 {
-  "name": "xPense",
+  "name": "Xpense",
   "description": "Effortlessly track expenses using voice and camera powered by Gemini.",
   "requestFramePermissions": [
     "camera",

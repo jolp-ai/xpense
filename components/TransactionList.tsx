@@ -136,7 +136,7 @@ const SwipeableItem: React.FC<{
         </div>
         <div className="flex flex-col items-end">
              <div className="font-bold text-gray-900 dark:text-gray-100 text-lg">
-                -{currencySymbol}{expense.amount.toFixed(2)}
+                {currencySymbol}{expense.amount.toFixed(2)}
              </div>
              {wallet && (
                  <div className="flex items-center gap-1 text-[10px] text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-1.5 py-0.5 rounded-md mt-0.5">
@@ -215,7 +215,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                 <select 
                   value={dateFilter.type} 
                   onChange={handleTypeChange}
-                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 py-1 pl-3 pr-8 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 py-1 pl-3 pr-8 rounded-lg text-sm font-medium outline-none"
                 >
                   <option value="today">Today</option>
                   <option value="yesterday">{t('yesterday') || "Yesterday"}</option>
@@ -237,13 +237,13 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                type="date" 
                value={dateFilter.startDate || ''} 
                onChange={(e) => handleDateChange('startDate', e.target.value)}
-               className="w-1/2 p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
+               className="w-1/2 p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 outline-none"
              />
              <input 
                type="date" 
                value={dateFilter.endDate || ''} 
                onChange={(e) => handleDateChange('endDate', e.target.value)}
-               className="w-1/2 p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
+               className="w-1/2 p-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 outline-none"
              />
            </div>
          )}

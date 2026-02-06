@@ -79,9 +79,15 @@ export const EditExpenseModal: React.FC<EditExpenseModalProps> = ({ isOpen, onCl
                 <input
                   type="number"
                   step="0.01"
+                  min="0"
                   required
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (["-", "+", "e", "E"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   autoFocus={isNew}
                   placeholder="0.00"
                   className="w-48 text-center text-5xl font-black bg-transparent text-gray-900 dark:text-white outline-none placeholder-gray-200 dark:placeholder-gray-700"

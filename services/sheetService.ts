@@ -1,26 +1,30 @@
 import { Expense, UserProfile, Wallet } from '../types';
 
-const SHEET_TITLE = 'xPense_Expenses';
+const SHEET_TITLE = 'Xpense_Expenses';
 // drive.file access is required to create the sheet in the user's Drive without asking for full Drive access.
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile';
 
 let tokenClient: any;
 let accessToken: string | null = null;
 
-// The previous default ID was restricted. Users must provide their own Client ID for their specific domain.
-const DEFAULT_CLIENT_ID = '75565530040-44sq4qh3ael2b1k7enseeulphv986opu.apps.googleusercontent.com';
+// TODO: PASTE YOUR NEW GOOGLE CLIENT ID BELOW
+// 1. Go to Google Cloud Console > APIs & Services > Credentials
+// 2. Create OAuth Client ID (Web Application)
+// 3. Add "http://localhost:5173" to Authorized JavaScript origins
+const DEFAULT_CLIENT_ID = '75565530040-9fig92ldmu6m9n7ble8gnf2hsttsdf9f.apps.googleusercontent.com';
 
 const getClientId = () => {
-  // Priority: Environment Variable -> Hardcoded Default.
-  // We strictly ignore localStorage here to prevent the app from using an old, invalid, or deleted Client ID 
-  // that might have been saved by the user in a previous version of the settings.
+  // Check localStorage first to allow users to provide their own working ID
+  const local = localStorage.getItem('xpense_google_client_id');
+  if (local) return local;
   return process.env.GOOGLE_CLIENT_ID || DEFAULT_CLIENT_ID;
 };
 
 export const initGoogleAuth = (onSuccess: () => void) => {
   const clientId = getClientId();
   
-  if (!clientId) {
+  if (!clientId || clientId.includes('YOUR_NEW_CLIENT_ID')) {
+    console.warn("Google Client ID is not configured.");
     return;
   }
 
@@ -40,7 +44,9 @@ export const initGoogleAuth = (onSuccess: () => void) => {
             } else if (response.error) {
                 console.error("Google Auth Error:", response);
                 if (response.error === 'access_denied') {
-                    alert("Access denied. If you are the developer, please ensure your email is added to the 'Test Users' list in Google Cloud Console > OAuth Consent Screen.");
+                    alert("Access denied. Please ensure your email is added to the 'Test Users' list in Google Cloud Console > OAuth Consent Screen.");
+                } else if (response.error === 'popup_closed_by_user') {
+                    // Ignore
                 } else {
                     alert(`Google Sign-In failed: ${response.error}`);
                 }
@@ -61,8 +67,8 @@ export const initGoogleAuth = (onSuccess: () => void) => {
 
 export const signInToGoogle = () => {
   const clientId = getClientId();
-  if (!clientId) {
-      alert("Please configure your Google Client ID in Settings > Advanced to enable sync.");
+  if (!clientId || clientId.includes('YOUR_NEW_CLIENT_ID')) {
+      alert("Please configure your Google Client ID in the code (services/sheetService.ts) to enable sync.");
       return;
   }
 
@@ -76,7 +82,7 @@ export const signInToGoogle = () => {
             tokenClient.requestAccessToken({ prompt: 'consent' });
         } else {
             console.error("Google Auth not initialized");
-             alert("Google Auth failed to load. Please refresh the page or check your Client ID.");
+             alert("Google Auth failed to load. Please refresh the page.");
         }
     }, 1000);
   }
@@ -117,6 +123,16 @@ const findOrCreateSheet = async (): Promise<string | null> => {
       `https://www.googleapis.com/drive/v3/files?q=name='${SHEET_TITLE}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
+    
+    if (!searchRes.ok) {
+        const err = await searchRes.json();
+        console.error("Drive API Search Error:", err);
+        if (searchRes.status === 403) {
+             alert("Sync Error: The Google Cloud Project for this Client ID does not have the 'Google Drive API' enabled. Please enable it in Google Cloud Console.");
+        }
+        return null;
+    }
+
     const searchData = await searchRes.json();
 
     if (searchData.files && searchData.files.length > 0) {
@@ -135,6 +151,12 @@ const findOrCreateSheet = async (): Promise<string | null> => {
         mimeType: 'application/vnd.google-apps.spreadsheet',
       }),
     });
+    
+    if (!createRes.ok) {
+         console.error("Drive API Create Error:", await createRes.text());
+         return null;
+    }
+
     const fileData = await createRes.json();
     const spreadsheetId = fileData.id;
 
@@ -199,29 +221,38 @@ export const fetchExpensesFromSheet = async (wallets: Wallet[]): Promise<Expense
     const spreadsheetId = await findOrCreateSheet();
     if (!spreadsheetId) return [];
 
+    // Use UNFORMATTED_VALUE to get raw numbers for amount, but ensure dates are strings via dateTimeRenderOption
     const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A2:F?valueRenderOption=FORMATTED_VALUE`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A2:F?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=FORMATTED_STRING`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
     
-    if (!response.ok) return [];
+    if (!response.ok) {
+        console.error("Sheet API Error:", response.status, response.statusText);
+        throw new Error("Failed to fetch sheet data");
+    }
 
     const data = await response.json();
     const rows = data.values;
     
     if (!rows || rows.length === 0) return [];
 
-    return rows.map((row: string[]) => {
+    return rows.map((row: any[]) => {
        // Row structure: [Date, Category, Description, Amount, Currency, Wallet]
-       // Formatted values come as strings.
        
-       const dateStr = row[0];
-       const category = row[1];
-       const description = row[2];
-       // Remove any currency symbols or commas for parsing
-       const amountStr = row[3] ? row[3].toString().replace(/[^0-9.-]+/g,"") : "0";
-       const amount = parseFloat(amountStr);
-       const walletName = row[5];
+       const dateStr = row[0] as string;
+       const category = row[1] as string;
+       const description = row[2] as string;
+       
+       // Amount should be a number (UNFORMATTED_VALUE)
+       let amount = 0;
+       if (typeof row[3] === 'number') {
+           amount = row[3];
+       } else if (typeof row[3] === 'string') {
+           amount = parseFloat(row[3].replace(/[^0-9.-]+/g,""));
+       }
+       
+       const walletName = row[5] as string;
        
        const wallet = wallets.find(w => w.name.toLowerCase() === (walletName || '').toLowerCase());
        
@@ -238,6 +269,6 @@ export const fetchExpensesFromSheet = async (wallets: Wallet[]): Promise<Expense
 
   } catch (e) {
     console.error("Error fetching sheet", e);
-    return [];
+    throw e;
   }
 };

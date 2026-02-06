@@ -159,7 +159,7 @@ export const askAiAboutExpenses = async (query: string, expenses: Expense[], cur
     .map(e => `${e.date}|${e.category}|${e.description}|${e.amount}`)
     .join('\n');
 
-  const systemInstruction = `You are a helpful financial assistant for 'xPense'. 
+  const systemInstruction = `You are a helpful financial assistant for 'Xpense'. 
   Access to user's expense history (CSV: Date|Category|Description|Amount).
   Currency: ${currencyCode}.
   Today: ${new Date().toISOString().split('T')[0]}.
