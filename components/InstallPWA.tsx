@@ -33,7 +33,7 @@ export const InstallPWA: React.FC = () => {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-36 left-0 right-0 z-40 flex justify-center px-6 animate-in slide-in-from-bottom-5 fade-in">
+    <div className="fixed bottom-[204px] left-0 right-0 z-40 flex justify-center px-6 animate-in slide-in-from-bottom-5 fade-in">
       <div className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full px-4 py-3 shadow-xl flex items-center gap-4 max-w-sm">
         <div className="flex items-center gap-3">
           <div className="bg-white/10 dark:bg-gray-200/50 p-2 rounded-full">
